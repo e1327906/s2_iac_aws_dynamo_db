@@ -64,9 +64,8 @@ resource "aws_dynamodb_table" "feedback_demo" {
     type = "S" # Use "N" for number or "B" for binary
   }
 
-  # Define the range key attribute if provided
-  attribute {
-    count = var.range_key_name != "" ? 1 : 0
+  # Only include the range key if it's provided
+  dynamic "attribute" {
     for_each = var.range_key_name != "" ? [var.range_key_name] : []
     content {
       name = var.range_key_name
@@ -74,7 +73,7 @@ resource "aws_dynamodb_table" "feedback_demo" {
     }
   }
 
-  # Include range key only if specified
+  # Set the range key if it exists
   range_key = var.range_key_name != "" ? var.range_key_name : null
 
   global_secondary_index {
