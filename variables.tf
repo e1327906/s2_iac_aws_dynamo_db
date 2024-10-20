@@ -1,6 +1,7 @@
 variable "hash_key_name" {
   description = "The name of the hash key attribute"
   type        = string
+  default = "PrimaryKey"
 }
 
 variable "range_key_name" {
@@ -24,6 +25,7 @@ variable "write_capacity" {
 variable "index_hash_key" {
   description = "The name of the hash key attribute for the global secondary index"
   type        = string
+  default = "SecondaryIndexKey"
 }
 
 variable "index_read_capacity" {
