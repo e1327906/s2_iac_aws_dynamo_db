@@ -55,19 +55,30 @@ resource "aws_dynamodb_table" "feedback_demo" {
   name           = "feedback_demo"
   billing_mode   = "PROVISIONED" # Can be "PAY_PER_REQUEST" if preferred
   hash_key       = var.hash_key_name
-  range_key      = var.range_key_name # Optional, omit if not using a range key
   read_capacity  = var.read_capacity
   write_capacity = var.write_capacity
 
+  # Define the hash key attribute
   attribute {
     name = var.hash_key_name
     type = "S" # Use "N" for number or "B" for binary
   }
 
-  # Optional range key
-  attribute {
-    name = var.range_key_name
-    type = "S"
+  # Conditionally add the range key attribute only if it's provided
+  dynamic "attribute" {
+    for_each = var.range_key_name != "" ? [var.range_key_name] : []
+    content {
+      name = attribute.value
+      type = "S" # Use "N" for number or "B" for binary
+    }
+  }
+
+  # Conditionally add the range key to the table if it's not empty
+  dynamic "range_key" {
+    for_each = var.range_key_name != "" ? [var.range_key_name] : []
+    content {
+      name = range_key.value
+    }
   }
 
   global_secondary_index {
@@ -78,10 +89,10 @@ resource "aws_dynamodb_table" "feedback_demo" {
     write_capacity     = var.index_write_capacity
   }
 
-  # Include attributes used in the global secondary index
+  # Define the hash key attribute for the global secondary index
   attribute {
     name = var.index_hash_key
-    type = "S"
+    type = "S" # Use "N" for number or "B" for binary
   }
 
   tags = {
