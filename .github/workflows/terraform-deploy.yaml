@@ -1,4 +1,4 @@
-name: Terraform AWS DynamoDB  Deployment
+name: Terraform AWS DynamoDB Deployment
 
 on:
   workflow_dispatch:

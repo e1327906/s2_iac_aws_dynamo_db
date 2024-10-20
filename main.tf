@@ -64,22 +64,18 @@ resource "aws_dynamodb_table" "feedback_demo" {
     type = "S" # Use "N" for number or "B" for binary
   }
 
-  # Conditionally add the range key attribute only if it's provided
-  dynamic "attribute" {
+  # Define the range key attribute if provided
+  attribute {
+    count = var.range_key_name != "" ? 1 : 0
     for_each = var.range_key_name != "" ? [var.range_key_name] : []
     content {
-      name = attribute.value
+      name = var.range_key_name
       type = "S" # Use "N" for number or "B" for binary
     }
   }
 
-  # Conditionally add the range key to the table if it's not empty
-  dynamic "range_key" {
-    for_each = var.range_key_name != "" ? [var.range_key_name] : []
-    content {
-      name = range_key.value
-    }
-  }
+  # Include range key only if specified
+  range_key = var.range_key_name != "" ? var.range_key_name : null
 
   global_secondary_index {
     name               = "example-index"
